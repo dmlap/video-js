@@ -35,3 +35,27 @@ test('should re-link the player if the tech is moved', function(){
 
   strictEqual(player, tech.el()['player']);
 });
+
+test('should retry fullscreen if the first attempt fails', function(){
+  var count, el, load, tech;
+  el = document.createElement('div');
+  tech = new vjs.Html5({
+    id: function(){ return 'id'; },
+    el: function(){ return el; },
+    options_: {},
+    ready: function(){}
+  }, {});
+  count = 0;
+  tech.el().webkitEnterFullScreen = function(){
+    count++;
+    throw count;
+  };
+  load = 0;
+  tech.el().load = function(){
+    load++;
+  };
+
+  tech.enterFullScreen();
+  equal(count, 2, 'full screen should be retried if the first attempt fails');
+  equal(load, 1, 'the tech should be loaded between retries');
+});

@@ -146,10 +146,15 @@ vjs.Html5.prototype.supportsFullScreen = function(){
 vjs.Html5.prototype.enterFullScreen = function(){
   try {
     this.el_.webkitEnterFullScreen();
-  } catch (e) {
-    if (e.code == 11) {
-      // this.warning(VideoJS.warnings.videoNotReady);
-      vjs.log('Video.js: Video not ready.');
+  } catch (ignored) {
+    // if this is a platform like iOS, we may have failed to enter full screen because the video element is still locked waiting for a user-triggered event to enable it. If enterFullScreen is being called as a result of a user event, it's possible to enter full screen if we take action on the video element first.
+    try {
+      this.el_.load(); // enable the video element for programmatic access
+      this.el_.webkitEnterFullScreen(); // retry full screen
+    } catch(e) {
+      if (e.code == 11) {
+        vjs.log(e, 'Video.js: Video not ready.');
+      }
     }
   }
 };
@@ -158,8 +163,7 @@ vjs.Html5.prototype.exitFullScreen = function(){
       this.el_.webkitExitFullScreen();
     } catch (e) {
       if (e.code == 11) {
-        // this.warning(VideoJS.warnings.videoNotReady);
-        vjs.log('Video.js: Video not ready.');
+        vjs.log(e, 'Video.js: Video not ready.');
       }
     }
 };
