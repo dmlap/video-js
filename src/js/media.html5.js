@@ -18,6 +18,9 @@ vjs.Html5 = vjs.MediaTechController.extend({
     // In iOS, if you move a video element in the DOM, it breaks video playback.
     this.features.movingMediaElementInDOM = !vjs.IS_IOS;
 
+    // HTML video is able to automatically resize when going to fullscreen
+    this.features.fullscreenResize = true;
+
     vjs.MediaTechController.call(this, player, options, ready);
 
     var source = options['source'];
@@ -149,24 +152,14 @@ vjs.Html5.prototype.supportsFullScreen = function(){
 };
 
 vjs.Html5.prototype.enterFullScreen = function(){
-  try {
-    this.el_.webkitEnterFullScreen();
-  } catch (e) {
-    if (e.code == 11) {
-      // this.warning(VideoJS.warnings.videoNotReady);
-      vjs.log('Video.js: Video not ready.');
-    }
+  if (this.el_.paused) {
+    this.el_.play(); // enable the video element for programmatic access
+    this.el_.pause();
   }
+  this.el_.webkitEnterFullScreen();
 };
 vjs.Html5.prototype.exitFullScreen = function(){
-    try {
-      this.el_.webkitExitFullScreen();
-    } catch (e) {
-      if (e.code == 11) {
-        // this.warning(VideoJS.warnings.videoNotReady);
-        vjs.log('Video.js: Video not ready.');
-      }
-    }
+  this.el_[vjs.Html5.requestFullScreen.cancelFn]();
 };
 vjs.Html5.prototype.src = function(src){ this.el_.src = src; };
 vjs.Html5.prototype.load = function(){ this.el_.load(); };
@@ -234,4 +227,3 @@ if (vjs.IS_ANDROID) {
     };
   }
 }
-
