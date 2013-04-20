@@ -152,14 +152,24 @@ vjs.Html5.prototype.supportsFullScreen = function(){
 };
 
 vjs.Html5.prototype.enterFullScreen = function(){
-  if (this.el_.paused) {
-    this.el_.play(); // enable the video element for programmatic access
-    this.el_.pause();
+  var video = this.el_;
+  if (video.paused && video.networkState <= video.HAVE_METADATA) {
+    // attempt to prime the video element for programmatic access
+    // this isn't necessary on the desktop but shouldn't hurt
+    this.el_.play();
+
+    // playing and pausing synchronously during the transition to fullscreen
+    // can get iOS ~6.1 devices into a play/pause loop
+    setTimeout(function(){
+      video.pause();
+      video.webkitEnterFullScreen();
+    }, 0);
+  } else {
+    video.webkitEnterFullScreen();
   }
-  this.el_.webkitEnterFullScreen();
 };
 vjs.Html5.prototype.exitFullScreen = function(){
-  this.el_[vjs.Html5.requestFullScreen.cancelFn]();
+  this.el_.webkitExitFullScreen();
 };
 vjs.Html5.prototype.src = function(src){ this.el_.src = src; };
 vjs.Html5.prototype.load = function(){ this.el_.load(); };

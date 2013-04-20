@@ -619,10 +619,8 @@ vjs.Player.prototype.requestFullScreen = function(){
   } else if (this.tech.supportsFullScreen()) {
     // we can't take the video.js controls fullscreen but we can go fullscreen
     // with native controls
-    
-    this.trigger('fullscreenchange');
-    this.techCall('enterFullScreen');
 
+    this.techCall('enterFullScreen');
   } else {
     // fullscreen isn't supported so we'll just stretch the video element to
     // fill the viewport
@@ -661,9 +659,8 @@ vjs.Player.prototype.cancelFullScreen = function(){
    }
 
   } else if (this.tech.supportsFullScreen()) {
-   this.techCall('exitFullScreen');
-   this.trigger('fullscreenchange');
 
+   this.techCall('exitFullScreen');
   } else {
    this.exitFullWindow();
    this.trigger('fullscreenchange');
