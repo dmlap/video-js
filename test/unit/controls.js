@@ -77,6 +77,25 @@ test('should test and toggle volume control on `loadstart`', function(){
      'muteToggle does not show itself');
 });
 
+test('should hide fullscreen controls if it\'s not supported', function(){
+  var noop, player, fullscreenToggle, requestFullScreen;
+  expect(1);
+  noop = function(){};
+  player = {
+    id: noop,
+    on: noop,
+    supportsFullScreen: noop,
+    tech: {
+    }
+  };
+  requestFullScreen = vjs.support.requestFullScreen;
+  vjs.support.requestFullScreen = false;
+  fullscreenToggle = new vjs.FullscreenToggle(player);
+
+  ok(fullscreenToggle.el().className.indexOf('vjs-hidden') >= 0, 'fullscreen toggle is not hidden');
+  vjs.support.requestFullScreen = requestFullScreen;
+});
+
 test('calculateDistance should use changedTouches, if available', function() {
   var noop, player, slider, event;
   noop = function(){};

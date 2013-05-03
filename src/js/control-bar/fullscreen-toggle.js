@@ -8,6 +8,10 @@ vjs.FullscreenToggle = vjs.Button.extend({
   /** @constructor */
   init: function(player, options){
     vjs.Button.call(this, player, options);
+
+    if (player.tech && !vjs.support.requestFullScreen && !player.supportsFullScreen()) {
+      this.addClass('vjs-hidden');
+    }
   }
 });
 
