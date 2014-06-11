@@ -21,7 +21,7 @@
   },
   "main": "./dist/video-js/video.js",
   "dependencies": {
-    "videojs-swf": "4.4.0"
+    "videojs-swf": "git+https://github.com/videojs/video-js-swf.git#937396111beac98fb3ea2779468aa17268c89dd1"
   },
   "devDependencies": {
     "calcdeps": "~0.1.7",
