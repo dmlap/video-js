@@ -90,6 +90,25 @@ class Tech extends Component {
     });
   }
 
+  /**
+   * Triggers an event on this tech. Unless otherwise specified, the
+   * event is assumed to be simple. For more details see
+   * Component.prototype.trigger.
+   * @param  {Event|Object|String} event  A string (the type) or an event object with a type attribute
+   * @param  {Object} [hash] data hash to pass along with the event
+   * @return {Tech}  self
+   * @method trigger
+   */
+  trigger(event, hash) {
+    if (typeof event === 'string') {
+      event = { type: event };
+    }
+    if (event.bubbles === undefined) {
+      event.bubbles = false;
+    }
+    return super.trigger.call(this, event, hash);
+  }
+
   /* Fallbacks for unsupported event types
   ================================================================================ */
   // Manually trigger progress events based on changes to the buffered amount
