@@ -11,6 +11,7 @@ import mergeOptions from '../../src/js/utils/merge-options.js';
 import * as Fn from './utils/fn.js';
 
 import assign from 'object.assign';
+import { createTimeRange } from './utils/time-ranges.js';
 import log from './utils/log.js';
 import xhr from './xhr.js';
 import * as Dom from './utils/dom.js';
@@ -349,7 +350,6 @@ videojs.log = log;
 
 /**
  * Simple http request for retrieving external files (e.g. text tracks)
- *
  * ##### Example
  *
  *     // using url string
@@ -375,8 +375,19 @@ videojs.log = log;
  * @param  {Object|String}  options   Options block or URL string
  * @param  {Function}       callback  The callback function
  * @returns {Object}                  The request
+ *
  */
 videojs.xhr = xhr;
+
+/**
+ * Creates an emulated TimeRange object.
+ *
+ * @param  {Number} start Start time in seconds
+ * @param  {Number} end   End time in seconds
+ * @return {Object}       Fake TimeRange object
+ * @method createTimeRange
+ */
+videojs.createTimeRange = createTimeRange;
 
 // REMOVING: We probably should add this to the migration plugin
 // // Expose but deprecate the window[componentName] method for accessing components
