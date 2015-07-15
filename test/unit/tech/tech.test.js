@@ -97,7 +97,26 @@ test('dispose() should stop time tracking', function() {
   ok(true, 'no exception was thrown');
 });
 
-test('should add the source hanlder interface to a tech', function(){
+test('events should not bubble by default', function(){
+  var tech = new Tech(), events = [], i;
+
+  tech.duration = function() {};
+  tech.on(['simplecustom', 'durationchange', 'progress', 'timeupdate'], function(event) {
+    events.push(event);
+  });
+
+  tech.trigger('simplecustom');
+  tech.trigger('durationchange');
+  tech.trigger('progress');
+  tech.trigger('timeupdate');
+
+  equal(events.length, 4, 'fired four events');
+  for (i = 0; i < events.length; i++) {
+    equal(events[i].bubbles, false, events[i].type + ' is a simple event');
+  }
+});
+
+test('should add the source handler interface to a tech', function(){
   var sourceA = { src: 'foo.mp4', type: 'video/mp4' };
   var sourceB = { src: 'no-support', type: 'no-support' };
 
