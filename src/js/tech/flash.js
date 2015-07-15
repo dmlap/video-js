@@ -1,5 +1,5 @@
 /**
- * @file flash.js 
+ * @file flash.js
  * VideoJS-SWF - Custom Flash Player with HTML5-ish API
  * https://github.com/zencoder/video-js-swf
  * Not using setupTriggers. Using global onEvent func to distribute events
@@ -54,6 +54,10 @@ class Flash extends Tech {
     window.videojs.Flash.onReady = Flash.onReady;
     window.videojs.Flash.onEvent = Flash.onEvent;
     window.videojs.Flash.onError = Flash.onError;
+
+    this.on('seeked', function() {
+      this.lastSeekTarget_ = undefined;
+    });
   }
 
   /**
@@ -124,8 +128,8 @@ class Flash extends Tech {
   /**
    * Get/set video
    *
-   * @param {Object=} src Source object 
-   * @return {Object} 
+   * @param {Object=} src Source object
+   * @return {Object}
    * @method src
    */
   src(src) {
@@ -140,7 +144,7 @@ class Flash extends Tech {
   /**
    * Set video
    *
-   * @param {Object=} src Source object 
+   * @param {Object=} src Source object
    * @deprecated
    * @method setSrc
    */
@@ -158,13 +162,22 @@ class Flash extends Tech {
   }
 
   /**
+   * Returns true if the tech is currently seeking.
+   * @return {boolean} true if seeking
+   */
+  seeking() {
+    return this.lastSeekTarget_ !== undefined;
+  }
+
+  /**
    * Set current time
    *
-   * @param {Number} time Current time of video 
+   * @param {Number} time Current time of video
    * @method setCurrentTime
    */
   setCurrentTime(time) {
     this.lastSeekTarget_ = time;
+    this.trigger('seeking');
     this.el_.vjs_setProperty('currentTime', time);
     super.setCurrentTime();
   }
@@ -172,7 +185,7 @@ class Flash extends Tech {
   /**
    * Get current time
    *
-   * @param {Number=} time Current time of video 
+   * @param {Number=} time Current time of video
    * @return {Number} Current time
    * @method currentTime
    */
@@ -240,7 +253,7 @@ class Flash extends Tech {
   /**
    * Get buffered time range
    *
-   * @return {TimeRangeObject} 
+   * @return {TimeRangeObject}
    * @method buffered
    */
   buffered() {
@@ -248,11 +261,11 @@ class Flash extends Tech {
   }
 
   /**
-   * Get fullscreen support - 
+   * Get fullscreen support -
    * Flash does not allow fullscreen through javascript
    * so always returns false
    *
-   * @return {Boolean} false 
+   * @return {Boolean} false
    * @method supportsFullScreen
    */
   supportsFullScreen() {
@@ -264,7 +277,7 @@ class Flash extends Tech {
    * Flash does not allow fullscreen through javascript
    * so always returns false
    *
-   * @return {Boolean} false 
+   * @return {Boolean} false
    * @method enterFullScreen
    */
   enterFullScreen() {
@@ -277,7 +290,7 @@ class Flash extends Tech {
 // Create setters and getters for attributes
 const _api = Flash.prototype;
 const _readWrite = 'rtmpConnection,rtmpStream,preload,defaultPlaybackRate,playbackRate,autoplay,loop,mediaGroup,controller,controls,volume,muted,defaultMuted'.split(',');
-const _readOnly = 'error,networkState,readyState,seeking,initialTime,duration,startOffsetTime,paused,played,ended,videoTracks,audioTracks,videoWidth,videoHeight'.split(',');
+const _readOnly = 'error,networkState,readyState,initialTime,duration,startOffsetTime,paused,played,ended,videoTracks,audioTracks,videoWidth,videoHeight'.split(',');
 
 function _createSetter(attr){
   var attrUpper = attr.charAt(0).toUpperCase() + attr.slice(1);
