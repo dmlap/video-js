@@ -1,4 +1,5 @@
 import Flash from '../../../src/js/tech/flash.js';
+import { createTimeRange } from '../../../src/js/utils/time-ranges.js';
 import document from 'global/document';
 
 q.module('Flash');
@@ -30,14 +31,17 @@ test('currentTime', function() {
   // Mock out a Flash instance to avoid creating the swf object
   let mockFlash = {
     el_: {
-      vjs_setProperty: function(prop, val){
+      vjs_setProperty(prop, val){
         setPropVal = val;
       },
-      vjs_getProperty: function(){
+      vjs_getProperty(){
         return getPropVal;
       }
     },
-    seeking: function(){
+    seekable(){
+      return createTimeRange(0, 1000);
+    },
+    seeking(){
       return seeking;
     }
   };
@@ -140,4 +144,36 @@ test('seekable', function() {
   mockFlash.duration_ = 0;
   result = seekable.call(mockFlash);
   equal(result.length, mockFlash.duration_, 'seekable is empty with a zero duration');
+});
+
+// fake out the <object> interaction but leave all the other logic intact
+class MockFlash extends Flash {
+  constructor() {
+    super({});
+    this.properties = {};
+  }
+  createEl() {
+    let el = document.createElement('mock-object');
+    el.vjs_getProperty = (property) => {
+      return this.properties[property];
+    };
+    el.vjs_setProperty = (property, value) => {
+      return this.properties[property] = value;
+    };
+    return el;
+  }
+  seekable() {
+    return this.properties.seekable;
+  }
+}
+
+test('clamps seeks to seekable', function() {
+  var flash = new MockFlash();
+  flash.properties.seekable = createTimeRange(0, 10);
+
+  flash.setCurrentTime(22);
+  equal(flash.currentTime(), 10, 'clamped to the last seekable time');
+
+  flash.setCurrentTime(-14);
+  equal(flash.currentTime(), 0, 'clamped to the earliest seekable time');
 });

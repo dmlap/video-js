@@ -1,5 +1,5 @@
 /**
- * @file flash.js 
+ * @file flash.js
  * VideoJS-SWF - Custom Flash Player with HTML5-ish API
  * https://github.com/zencoder/video-js-swf
  * Not using setupTriggers. Using global onEvent func to distribute events
@@ -124,8 +124,8 @@ class Flash extends Tech {
   /**
    * Get/set video
    *
-   * @param {Object=} src Source object 
-   * @return {Object} 
+   * @param {Object=} src Source object
+   * @return {Object}
    * @method src
    */
   src(src) {
@@ -140,7 +140,7 @@ class Flash extends Tech {
   /**
    * Set video
    *
-   * @param {Object=} src Source object 
+   * @param {Object=} src Source object
    * @deprecated
    * @method setSrc
    */
@@ -160,19 +160,26 @@ class Flash extends Tech {
   /**
    * Set current time
    *
-   * @param {Number} time Current time of video 
+   * @param {Number} time Current time of video
    * @method setCurrentTime
    */
   setCurrentTime(time) {
-    this.lastSeekTarget_ = time;
-    this.el_.vjs_setProperty('currentTime', time);
-    super.setCurrentTime();
+    let seekable = this.seekable();
+    if (seekable.length) {
+      // clamp to the current seekable range
+      time = time > seekable.start(0) ? time : seekable.start(0);
+      time = time < seekable.end(seekable.length - 1) ? time : seekable.end(seekable.length - 1);
+
+      this.lastSeekTarget_ = time;
+      this.el_.vjs_setProperty('currentTime', time);
+      super.setCurrentTime();
+    }
   }
 
   /**
    * Get current time
    *
-   * @param {Number=} time Current time of video 
+   * @param {Number=} time Current time of video
    * @return {Number} Current time
    * @method currentTime
    */
@@ -240,7 +247,7 @@ class Flash extends Tech {
   /**
    * Get buffered time range
    *
-   * @return {TimeRangeObject} 
+   * @return {TimeRangeObject}
    * @method buffered
    */
   buffered() {
@@ -248,11 +255,11 @@ class Flash extends Tech {
   }
 
   /**
-   * Get fullscreen support - 
+   * Get fullscreen support -
    * Flash does not allow fullscreen through javascript
    * so always returns false
    *
-   * @return {Boolean} false 
+   * @return {Boolean} false
    * @method supportsFullScreen
    */
   supportsFullScreen() {
@@ -264,7 +271,7 @@ class Flash extends Tech {
    * Flash does not allow fullscreen through javascript
    * so always returns false
    *
-   * @return {Boolean} false 
+   * @return {Boolean} false
    * @method enterFullScreen
    */
   enterFullScreen() {
