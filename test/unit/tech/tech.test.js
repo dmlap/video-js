@@ -220,7 +220,6 @@ test('delegates seekable to the source handler', function(){
     }
   });
   Tech.withSourceHandlers(MyTech);
-
   let seekableCount = 0;
   let handler = {
     seekable: function() {
@@ -228,7 +227,6 @@ test('delegates seekable to the source handler', function(){
       return createTimeRange(0, 0);
     }
   };
-
   MyTech.registerSourceHandler({
     canHandleSource: function() {
       return true;
@@ -245,4 +243,12 @@ test('delegates seekable to the source handler', function(){
   });
   tech.seekable();
   equal(seekableCount, 1, 'called the source handler');
+});
+
+test('should track whether a video has played', function() {
+  let tech = new Tech();
+
+  equal(tech.played().length, 0, 'starts with zero length');
+  tech.trigger('playing');
+  equal(tech.played().length, 1, 'has length after playing');
 });
